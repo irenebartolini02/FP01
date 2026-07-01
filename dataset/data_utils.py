@@ -25,18 +25,19 @@ def get_wsi_level_info(slide: openslide.OpenSlide, level: int):
     downsample = slide.level_downsamples[level]
     return dimensions, downsample
 
-def get_wsi_thumbnail(slide: openslide.OpenSlide, max_size: tuple = (600, 600)) -> Image.Image:
+def get_wsi_thumbnail(slide: openslide.OpenSlide) -> Image.Image:
     """
     Genera una miniatura (thumbnail) leggera mantenendo il rapporto d'aspetto,
     ideale per visualizzazioni rapide e calcolo delle maschere di tessuto.
     """
+    max_size= slide.level_dimensions[8]
     return slide.get_thumbnail(size=max_size)
 
-def plot_wsi_thumbnail(slide: openslide.OpenSlide, title: str = "WSI Thumbnail", max_size: tuple = (600, 600)):
+def plot_wsi_thumbnail(slide: openslide.OpenSlide, title: str = "WSI Thumbnail"):
     """
     Mostra a schermo l’anteprima della WSI usando matplotlib.
     """
-    thumbnail = get_wsi_thumbnail(slide, max_size=max_size)
+    thumbnail = get_wsi_thumbnail(slide)
     plt.figure(figsize=(8, 8))
     plt.imshow(thumbnail)
     plt.title(title)
@@ -154,3 +155,41 @@ def encrypt_filename_training(obj):
     return filename_1, filename_2
 
 
+def decrypt_filename_gt ( filename ):
+    file_name_parts= filename.split("_")
+
+    parts=len(file_name_parts)
+    if parts != 9:
+        print (f"[WARNING] bad filename {parts} instead of 9")
+        print (file_name_parts)
+    study_id= file_name_parts[0]
+    patient_id= file_name_parts[1]
+    patient_gen_and_age= file_name_parts[2]
+
+    patient_gender= patient_gen_and_age.split(".")[0]
+    patient_age= patient_gen_and_age.split(".")[1]
+    metadata_and_stain=file_name_parts[6]
+    metadata_parts= metadata_and_stain.split(".")
+    
+    gt_type= file_name_parts[8].split(".")[0]
+    
+    if len(metadata_parts)<3:
+        metadata=  metadata_parts[0].replace("ADR", "")
+        stain= metadata_parts[1]
+    else:
+        metadata=  metadata_parts[0]
+        stain=  metadata_parts[2]
+
+    p= {
+        'patient_id': patient_id,
+        'gender': patient_gender,
+        'age': patient_age,
+        'study_id': study_id,
+        'metadata' : metadata,
+        'stain': stain,
+        'gt_type' : gt_type
+    }
+    return p
+
+def encrypt_filename_gt(obj):
+   pass

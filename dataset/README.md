@@ -118,3 +118,31 @@ def decript_filename_training(filename):
         'stain': stain
     }
 
+def decrypt_filename_gt ( filename ):
+    ...
+    return {
+        'patient_id': patient_id,
+        'gender': patient_gender,
+        'age': patient_age,
+        'study_id': study_id,
+        'metadata' : metadata,
+        'stain': stain,
+        'gt_type' : gt_type
+    }
+
+```
+### 2. Filename Parser (Encryption)
+This function encrypt metadata (stored in `dataset\WSO_metadata.csv`) in filenames
+
+```python
+def decript_filename_training(metadata_obj):
+    ...
+    return filename
+
+def decrypt_filename_gt ( metadata_obj):
+    ...
+    return filename
+
+```
+
+
